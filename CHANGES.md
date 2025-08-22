@@ -1,22 +1,18 @@
-# Changes — finance-v0.1a4-patch2
+# Changes — finance-v0.1a4-patch4
 
 ## What changed
-- **Amex header fix:** Detects headerless exports and promotes the first data row to headers.
-- **Sign heuristic:** For single `Amount` sheets, detects if positive or negative represents expenses (Amex vs MC) and normalizes to **expenses positive**.
-- **Detail parser:** Handles unnamed Year/Month columns by **position** and computes income as the sum of `*salary` columns (abs), expenses from `Total expenses` (if present) or sum of positive non-salary columns.
+- **Very-smart Amex reheader:** scans first 500 rows; requires date+description+amount tokens; skips blank lines after header before data.
+- Keeps preference for `CONVERTED £` and Excel-serial date conversion.
 
 ## How to apply
-1. Unzip this at repo root, overwriting files.
-2. Run:
+1. Unzip at repo root (overwrites `lib/xlsx.ts`).
+2. Commit and run:
    ```bash
-   npm run inspect:2024
-   npm run compare:2024
+   nvm use 20
+   npm install
+   npx tsx scripts/debug-parse.ts ./data/Savings.xlsx
+   npx tsx scripts/etl-compare-2024.ts ./data/Savings.xlsx
    ```
 
-## Expected
-- `inspect:2024` stays the same (already working).
-- `compare:2024` should now produce **sensible totals** for both Amex and MC vs Detail; 
-  Amazon-heavy months may still show diffs until v0.1b Amazon linkage.
-
 ## Commit suggestion
-fix(v0.1a4): handle Amex headerless export + amount polarity; improve Detail parser
+fix(v0.1a4): very-smart Amex reheader (scan 500 rows; robust tokens)

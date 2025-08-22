@@ -1,3 +1,4 @@
+// lib/xlsx.ts
 import * as XLSX from 'xlsx';
 import dayjs from 'dayjs';
 import { readFileSync } from 'node:fs';
@@ -47,47 +48,79 @@ function findKey(row: any, wants: string[]): string | undefined {
 }
 
 /**
- * Some exports (your 2024 Amex) have an "empty" header row (nulls)
- * and put the real header labels in the FIRST DATA ROW.
- * This promotes that row to be the header and builds objects for the rest.
+ * Very-smart reheader:
+ * 1) If header row has values, use it.
+ * 2) Else scan the first 500 rows to find the FIRST row that contains header-like tokens:
+ *    must include (any of): 'date','date processed','converted date' AND 'description'
+ *    AND (any of): 'amount','converted £','converted £' (case-insensitive).
+ * 3) If still not found, also look for a row that exactly equals common Amex labels
+ *    (e.g., 'Date','Description','Amount','CONVERTED £').
+ * 4) Fallback to row 1.
  */
-function reheaderIfNeeded(ws: XLSX.WorkSheet): any[] {
+function reheaderVerySmart(ws: XLSX.WorkSheet): any[] {
   const rowsA1: any[][] = XLSX.utils.sheet_to_json(ws, { defval: null, raw: true, header: 1 });
-  const header = rowsA1[0] ?? [];
-  const allNullHeader = header.every(h => h === null || h === undefined || String(h).trim() === '');
-  if (!allNullHeader) {
+  if (!rowsA1.length) return [];
+
+  const header0 = rowsA1[0] ?? [];
+  const header0HasValues = header0.some((h:any) => h != null && String(h).trim() !== '');
+  if (header0HasValues) {
     return XLSX.utils.sheet_to_json(ws, { defval: null, raw: true });
   }
-  const firstData = rowsA1[1] ?? [];
-  const hdr = firstData.map((h: any) => (h == null ? '' : String(h).trim()));
-  const data = rowsA1.slice(2);
-  const out: any[] = data.map(r => {
-    const obj: any = {};
-    for (let i = 0; i < hdr.length; i++) {
-      const key = hdr[i] && hdr[i] !== '' ? hdr[i] : `col_${i}`;
-      obj[key] = r[i] ?? null;
+
+  const maxScan = Math.min(rowsA1.length, 500);
+  const hasToken = (row: any[], needles: string[]) => {
+    const txt = row.map(c => String(c ?? '').toLowerCase().trim());
+    return needles.some(n => txt.some(t => t.includes(n)));
+  };
+
+  let headerIdx = -1;
+  for (let i = 1; i < maxScan; i++) {
+    const row = rowsA1[i] ?? [];
+    const nonEmpty = row.filter(c => c != null && String(c).trim() !== '').length;
+    if (nonEmpty < 3) continue;
+    const hasDate = hasToken(row, ['date processed','converted date','date ' , 'date']);
+    const hasDesc = hasToken(row, ['description','merchant name','doing business as']);
+    const hasAmt  = hasToken(row, ['converted £','amount','billed amount','gbp amount','charge amount','value']);
+    if (hasDate && hasDesc && hasAmt) { headerIdx = i; break; }
+  }
+
+  if (headerIdx === -1) {
+    // Try strict matches row containing these exact strings
+    for (let i = 1; i < maxScan; i++) {
+      const row = rowsA1[i] ?? [];
+      const s = row.map(c => String(c ?? '').trim());
+      if (s.includes('Date') && s.includes('Description') && (s.includes('Amount') || s.includes('CONVERTED £'))) {
+        headerIdx = i; break;
+      }
     }
-    return obj;
+  }
+
+  if (headerIdx === -1) headerIdx = 1; // worst-case fallback
+
+  const hdr = (rowsA1[headerIdx] ?? []).map((h: any, i: number) => {
+    const s = h == null ? '' : String(h).trim();
+    return s === '' ? `col_${i}` : s;
   });
+
+  // Data starts AFTER the header row we picked; skip any all-null rows immediately after
+  let start = headerIdx + 1;
+  while (start < rowsA1.length) {
+    const r = rowsA1[start] ?? [];
+    const nonEmpty = r.some(c => c != null && String(c).trim() !== '');
+    if (nonEmpty) break;
+    start++;
+  }
+
+  const data = rowsA1.slice(start);
+  const out: any[] = data.map(r => Object.fromEntries(hdr.map((k, i) => [k, r[i] ?? null])));
   return out;
 }
 
-/**
- * Robust card parser:
- * - Promotes header row if needed (Amex 2024 case).
- * - Supports single "Amount" OR split "Debit/ Credit".
- * - Date keys include "Date " (with space) and "Converted date".
- * - For single Amount sheets, we keep the sign as-is for Amex positives=expense (refunds negative).
- *   For MC, we prefer the "CONVERTED £" column which already has expense positive, payments negative.
- * Output invariant: expenses POSITIVE, credits/refunds NEGATIVE.
- */
 export function parseCardSheet(ws: XLSX.WorkSheet, source: 'amex' | 'mc'): CanonicalTxn[] {
-  let rows: any[] = reheaderIfNeeded(ws);
+  const rows: any[] = reheaderVerySmart(ws);
   if (!rows.length) return [];
 
-  // MC uses both "Date " and "Converted date"; Amex has "Date" too
-  const kDate = findKey(rows[0], ['Post Date','Posted','Date','Date ','Transaction Date','Posting Date','Processed Date','Converted date'])!;
-  // Prefer MC "CONVERTED £" if present, otherwise generic Amounts
+  const kDate = findKey(rows[0], ['Post Date','Posted','Date','Date ','Transaction Date','Posting Date','Processed Date','Date Processed','Converted date']);
   const kAmountPref = findKey(rows[0], ['CONVERTED £','Converted £']);
   const kAmount = kAmountPref ?? findKey(rows[0], ['Amount','GBP Amount','Billed Amount','Charge Amount','Value']);
   const kDebit = findKey(rows[0], ['Debit','Debit Amount']);
@@ -95,25 +128,25 @@ export function parseCardSheet(ws: XLSX.WorkSheet, source: 'amex' | 'mc'): Canon
   const kDesc = findKey(rows[0], ['Description','Merchant Name','Extended Details','Memo','Details','Narrative','Doing Business As'] );
   const kCurr = findKey(rows[0], ['Currency','Curr','Currency Code']);
 
+  if (!kDate) return []; // give up if no date column discovered
+  if (!kAmount && !kDebit && !kCredit) return [];
+
   const out: CanonicalTxn[] = [];
   for (const r of rows) {
     try {
-      const dateRaw = kDate ? r[kDate] : undefined;
+      const dateRaw = r[kDate];
       if (!dateRaw) continue;
       const iso = normalizeDate(dateRaw);
 
       let amt: number | undefined;
       if (kAmount) {
         const raw = toNumber(r[kAmount]);
-        // If using MC "CONVERTED £" or generic Amount: treat positive as expense, negatives as refund/payment.
         amt = raw;
-      } else if (kDebit || kCredit) {
+      } else {
         const debit = kDebit ? toNumber(r[kDebit]) : 0;
         const credit = kCredit ? toNumber(r[kCredit]) : 0;
         amt = debit > 0 ? debit : (credit > 0 ? -credit : 0);
         if (amt === 0) continue;
-      } else {
-        continue;
       }
 
       const desc = kDesc ? r[kDesc] : undefined;
@@ -134,12 +167,7 @@ export function parseCardSheet(ws: XLSX.WorkSheet, source: 'amex' | 'mc'): Canon
   return out;
 }
 
-/**
- * Extract ground truth from "Detail".
- * - First 3 columns may be unnamed; use positional fallback: [0]=year, [2]=month number.
- * - Income = sum(abs) of all columns with "salary" in the header.
- * - Expenses = "Total expenses" if present; else sum of positive non-salary columns.
- */
+// Detail parsing unchanged from patch3
 export function parseDetailTruth(ws: XLSX.WorkSheet, year: number): DetailTruthRow[] {
   const rowsA1: any[][] = XLSX.utils.sheet_to_json(ws, { defval: null, raw: true, header: 1 });
   if (!rowsA1.length) return [];
