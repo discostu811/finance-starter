@@ -1,3 +1,4 @@
+import { filterTransactions } from "./etl-filters";
 // lib/xlsx.ts
 // Patch6: Wire robust A1-index header detection into main ETL
 import * as XLSX from "xlsx";
@@ -146,7 +147,7 @@ export function parseCardSheet(ws: XLSX.WorkSheet, source: "amex" | "mc"): Canon
       continue;
     }
   }
-  return out;
+  return filterTransactions(out);
 }
 
 export function parseDetailTruth(ws: XLSX.WorkSheet, year: number): DetailTruthRow[] {
