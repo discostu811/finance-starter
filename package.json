@@ -3,11 +3,11 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "xlsx": "^0.18.5",
-    "dayjs": "^1.11.11"
+    "dayjs": "^1.11.11",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "tsx": "^4.16.2"
+    "tsx": "^4.20.4"
   },
   "scripts": {
     "inspect:2024": "tsx scripts/inspect-headers.ts ./data/Savings.xlsx",
