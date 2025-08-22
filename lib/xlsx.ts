@@ -5,9 +5,14 @@ import { readFileSync } from 'node:fs';
 import { CanonicalTxn, DetailTruthRow } from './types';
 
 function normalizeDate(input: any): string {
+  // Handle Excel serial numbers without relying on XLSX.SSF (works in ESM)
   if (typeof input === 'number') {
-    const d = XLSX.SSF.parse_date_code(input);
-    return dayjs(new Date(d.y, d.m - 1, d.d)).format('YYYY-MM-DD');
+    const serial = input;
+    // Excel's epoch is 1899-12-30 (accounts for the 1900 leap-year bug)
+    const ms = Math.round(serial * 86400000);
+    const base = Date.UTC(1899, 11, 30, 0, 0, 0);
+    const iso = dayjs(base + ms).format('YYYY-MM-DD');
+    return iso;
   }
   const txt = String(input ?? '').trim();
   if (!txt) throw new Error('Empty date cell');
