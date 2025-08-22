@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "inspect:2024": "tsx scripts/inspect-headers.ts ./data/Savings.xlsx",
     "compare:2024": "tsx scripts/etl-compare-2024.ts ./data/Savings.xlsx"
   },
   "dependencies": {
