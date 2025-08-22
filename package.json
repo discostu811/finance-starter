@@ -1,29 +1,16 @@
 {
-  "name": "finance-starter",
-  "version": "0.1.0",
+  "name": "finance-etl-harness",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "inspect:2024": "tsx scripts/inspect-headers.ts ./data/Savings.xlsx",
-    "compare:2024": "tsx scripts/etl-compare-2024.ts ./data/Savings.xlsx"
-  },
+  "type": "module",
   "dependencies": {
-    "next": "14.2.5",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
     "xlsx": "^0.18.5",
     "dayjs": "^1.11.11"
   },
   "devDependencies": {
-    "typescript": "5.5.4",
-    "@types/node": "20.12.12",
-    "@types/react": "18.3.3",
-    "@types/react-dom": "18.3.0",
-    "eslint": "8.57.0",
-    "eslint-config-next": "14.2.5",
     "tsx": "^4.16.2"
+  },
+  "scripts": {
+    "inspect:2024": "tsx scripts/inspect-headers.ts ./data/Savings.xlsx",
+    "compare:2024": "tsx scripts/etl-compare-2024.ts ./data/Savings.xlsx"
   }
 }
