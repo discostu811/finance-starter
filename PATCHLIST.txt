@@ -1,4 +1,4 @@
-# PATCHLIST — finance-v0.1a4-patch4
+# PATCHLIST — finance-v0.1a4-patch6
 lib/xlsx.ts
 CHANGES.md
 PATCHLIST.txt
