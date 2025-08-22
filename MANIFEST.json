@@ -1,0 +1,54 @@
+{
+  "README.md": {
+    "sha256": "0235cefe1b801774f2088de4042f7aadcfeb7112d2fee4dc241fd8e738bbee69",
+    "bytes": 2121
+  },
+  "PROJECT-INSTRUCTIONS.md": {
+    "sha256": "2a2d952173c668b439e2cd819f16a37eb649e74f9b4adaf433ead9d2986f65a9",
+    "bytes": 3315
+  },
+  "PROJECT-NOTES.md": {
+    "sha256": "ad27c348fe6eee540ee1f41cdb26c53e1e61af404968a3ef31577520ebda3faf",
+    "bytes": 1544
+  },
+  "CHANGES.md": {
+    "sha256": "5d3e5842cc24f1645966f74b847fc6c4667aed805c6265e6f4a9a15944e892dc",
+    "bytes": 867
+  },
+  "PATCHLIST.txt": {
+    "sha256": "666e12bad47a5f6c5b544f1fdcced7f89b668a98248af42564eb865d81d4ead0",
+    "bytes": 150
+  },
+  ".nvmrc": {
+    "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+    "bytes": 3
+  },
+  "PACKAGE.json.additions.txt": {
+    "sha256": "e5655c8fe6f0ab1cc7af8a975e8c01361ddd6cbd6a4e4e734a3a0201c6149049",
+    "bytes": 332
+  },
+  "lib/types.ts": {
+    "sha256": "38f16ea092fbb196f467733d3cf1cfc0da36403284e26548988dca9f1e753162",
+    "bytes": 715
+  },
+  "lib/xlsx.ts": {
+    "sha256": "10027b94346b7392dafa23c0befedc498b137347da190e45099149369225c53c",
+    "bytes": 5508
+  },
+  "lib/rollup.ts": {
+    "sha256": "293c9d3bdba095dc46900e9e028081ca636776e61a84100d488548b1b773c930",
+    "bytes": 1036
+  },
+  "lib/comparator.ts": {
+    "sha256": "981b7fa41e36e75b806396119fd60f26e7425633b973f64a5623314bee72f04d",
+    "bytes": 1846
+  },
+  "scripts/etl-compare-2024.ts": {
+    "sha256": "95baa9152e6fa21cda7a47a1af48c80cf1f69c65c081e23fa9ee8735d139d7d8",
+    "bytes": 1914
+  },
+  "scripts/inspect-headers.ts": {
+    "sha256": "264ba55e259243cbc5bcfb80cc645bbdcc4c32c04152f4098e19427066a249dd",
+    "bytes": 1940
+  }
+}

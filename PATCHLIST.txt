@@ -1,0 +1,7 @@
+# PATCHLIST — finance-v0.1a4 (files updated in this drop)
+README.md
+PROJECT-INSTRUCTIONS.md
+PROJECT-NOTES.md
+CHANGES.md
+PATCHLIST.txt
+MANIFEST.json

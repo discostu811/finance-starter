@@ -1,0 +1,15 @@
+Add/merge this into your package.json:
+
+{
+  "dependencies": {
+    "xlsx": "^0.18.5",
+    "dayjs": "^1.11.11"
+  },
+  "devDependencies": {
+    "tsx": "^4.16.2"
+  },
+  "scripts": {
+    "inspect:2024": "tsx scripts/inspect-headers.ts ./data/Savings.xlsx",
+    "compare:2024": "tsx scripts/etl-compare-2024.ts ./data/Savings.xlsx"
+  }
+}

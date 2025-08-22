@@ -39,7 +39,7 @@ async function main() {
   const truth = parseDetailTruth(detailWs, 2024);
 
   if (truth.length === 0) {
-    console.error('No truth rows found for 2024 in "Detail" — check column name guesses in lib/xlsx.ts');
+    console.error('No truth rows found for 2024 in "Detail" — run inspect:2024 and adjust lib/xlsx.ts');
     process.exit(2);
   }
 

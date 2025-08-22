@@ -3,7 +3,7 @@
 export type CanonicalTxn = {
   source: 'amex' | 'mc';
   postedDate: string;      // YYYY-MM-DD
-  amount: number;          // signed, expenses positive here
+  amount: number;          // expenses positive, credits negative
   currency?: string;
   merchantRaw?: string;
   descriptionRaw?: string;
