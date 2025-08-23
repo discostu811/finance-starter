@@ -1,0 +1,18 @@
+{
+  "bank": {
+    "expense_ignore": [
+      "^GLOBAL MONEY\\b",
+      "\\bINTERNET TRANSFER\\s*TFR\\b",
+      "^VANGUARD ASSET MAN\\b",
+      "^TravelFX\\b",
+      "^AMERICAN EXPRESS( DD| WWW|\\b)"
+    ],
+    "income_ignore": [
+      "^GLOBAL MONEY\\b"
+    ]
+  },
+  "cards": {
+    "expense_ignore": [],
+    "income_ignore": []
+  }
+}

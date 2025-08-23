@@ -1,12 +1,14 @@
-// CANARY: finance-starter v0.1c4 (tidy reconciliation print all 2dp)
+// CANARY: finance-starter v0.1c5 (apply suppression config + tidy 2dp)
 import { loadWorkbook, parseCardSheet } from "../lib/xlsx";
 import { parseDetailTruthSheet } from "../lib/truth";
 import { looksAmazon, extractAmazonDetailFromWorkbook, suppressMatchedAmazonParents, AmazonParent } from "../lib/amazon";
 import { parseAllEmbeddedBank, suppressCardBillPayments } from "../lib/bank_embedded";
+import { shouldSuppressBank } from "../lib/suppress";
 
 const file = process.argv[2] || "./data/Savings.xlsx";
 const year = Number(process.argv[3] || 2024);
 const SUPPRESS_AMZ = process.env.AMAZON_SUPPRESS_PARENTS === "1";
+const SUPPRESS_CARD_BILLS = process.env.BANK_SUPPRESS_CARD_BILLS === "1";
 
 const wb = loadWorkbook(file);
 
@@ -17,7 +19,7 @@ const amex = amexName ? parseCardSheet(wb.Sheets[amexName], "amex") : [];
 const mc   = mcName   ? parseCardSheet(wb.Sheets[mcName], "mc")   : [];
 let all = [...amex, ...mc];
 
-// Amazon parent suppression
+// Amazon parents ➜ suppress card parents that are backed by Amazon detail
 if (SUPPRESS_AMZ) {
   const parents: AmazonParent[] = all
     .filter(t => looksAmazon(t.merchantRaw || t.descriptionRaw))
@@ -31,11 +33,29 @@ if (SUPPRESS_AMZ) {
 
 // Embedded bank
 let bank = parseAllEmbeddedBank(wb, year);
-const before = bank.length;
-bank = suppressCardBillPayments(bank);
-const after = bank.length;
-if (after !== before) console.log(`Suppressed bank card-bill rows: ${before - after}`);
-all = [...all, ...bank];
+const beforeBills = bank.length;
+let billSupp = 0;
+if (SUPPRESS_CARD_BILLS) {
+  const b0 = bank;
+  bank = suppressCardBillPayments(bank);
+  billSupp = b0.length - bank.length;
+}
+if (billSupp) console.log(`Suppressed bank card-bill rows: ${billSupp}`);
+
+// Apply config-based suppression to bank
+let bankSuppExpense = 0, bankSuppIncome = 0, bankSuppAmtExp = 0, bankSuppAmtInc = 0;
+const bankKept = [];
+for (const t of bank) {
+  const why = shouldSuppressBank({ source: "bank", postedDate: t.postedDate, amount: t.amount, merchantRaw: t.merchantRaw, descriptionRaw: t.descriptionRaw });
+  if (why === "expense") { bankSuppExpense++; bankSuppAmtExp += t.amount; continue; }
+  if (why === "income")  { bankSuppIncome++;  bankSuppAmtInc += -t.amount; continue; }
+  bankKept.push(t);
+}
+if (bankSuppExpense || bankSuppIncome) {
+  console.log(`Suppressed by config — bank: ${bankSuppExpense} expense rows (£${bankSuppAmtExp.toFixed(2)}), ${bankSuppIncome} income rows (£${bankSuppAmtInc.toFixed(2)})`);
+}
+
+all = [...all, ...bankKept];
 
 // Truth (Detail)
 const detailName = wb.SheetNames.find(n => n.toLowerCase() === "detail");
