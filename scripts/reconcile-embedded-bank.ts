@@ -1,4 +1,4 @@
-// CANARY: finance-starter v0.1c3 (tidy reconciliation print)
+// CANARY: finance-starter v0.1c4 (tidy reconciliation print all 2dp)
 import { loadWorkbook, parseCardSheet } from "../lib/xlsx";
 import { parseDetailTruthSheet } from "../lib/truth";
 import { looksAmazon, extractAmazonDetailFromWorkbook, suppressMatchedAmazonParents, AmazonParent } from "../lib/amazon";
@@ -34,16 +34,14 @@ let bank = parseAllEmbeddedBank(wb, year);
 const before = bank.length;
 bank = suppressCardBillPayments(bank);
 const after = bank.length;
-if (after !== before) {
-  console.log(`Suppressed bank card-bill rows: ${before - after}`);
-}
+if (after !== before) console.log(`Suppressed bank card-bill rows: ${before - after}`);
 all = [...all, ...bank];
 
-// Truth
+// Truth (Detail)
 const detailName = wb.SheetNames.find(n => n.toLowerCase() === "detail");
 const truth = detailName ? parseDetailTruthSheet(wb.Sheets[detailName], year) : [];
 
-// Rollup
+// Rollups
 const incExpByMonth: Record<number, { inc: number; exp: number }> = {};
 for (const t of all) {
   const m = Number(t.postedDate.slice(5,7));
@@ -66,6 +64,6 @@ for (let m = 1; m <= 12; m++) {
   const okInc = dInc === 0 ? "✅" : "❌";
   const okExp = dExp === 0 ? "✅" : "❌";
   console.log(
-    `${String(m).padStart(5)} | ${ours.inc.toFixed(2).padStart(10)} ${incTruth.toFixed(2).padStart(10)} ${dInc.toFixed(2).padStart(10)} ${okInc} | ${ours.exp.toFixed(10)} ${expTruth.toFixed(10)} ${dExp.toFixed(2).padStart(10)} ${okExp}`
+    `${String(m).padStart(5)} | ${ours.inc.toFixed(2).padStart(10)} ${incTruth.toFixed(2).padStart(10)} ${dInc.toFixed(2).padStart(10)} ${okInc} | ${ours.exp.toFixed(2).padStart(10)} ${expTruth.toFixed(2).padStart(10)} ${dExp.toFixed(2).padStart(10)} ${okExp}`
   );
 }
