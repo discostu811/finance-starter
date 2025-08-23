@@ -1,5 +1,5 @@
 // CANARY: finance-starter v0.1b3 (suppressed compare uses grouping)
-import { loadWorkbook, parseCardSheet, parseDetailTruth } from '../lib/xlsx';
+import { loadWorkbook, parseCardSheet, parseDetailTruthSheet as parseDetailTruth from '../lib/truth';
 import { looksAmazon, extractAmazonDetailFromWorkbook, suppressMatchedAmazonParents, AmazonParent } from '../lib/amazon';
 
 const file = process.argv[2] || './data/Savings.xlsx';
