@@ -110,19 +110,29 @@ export function parseDetailTruthSheet(ws: XLSX.WorkSheet, year: number): TruthRo
     let expensesTotal = 0;
     if (totalExpIdx >= 0) {
       expensesTotal = toNum(r[totalExpIdx]);
-      // If sheet stores total as positive, keep it. If negative, flip to positive expense.
       expensesTotal = Math.abs(expensesTotal);
+      if (!expensesTotal) {
+        const start = Number.isFinite(categoryStart) ? categoryStart : 3;
+        for (let i = start; i < header.length; i++) {
+          if (incomeCols.includes(i)) continue;
+          const name = String(header[i]).toLowerCase();
+          if (!name || name.startsWith("col_")) continue;
+          const v = toNum(r[i]);
+          if (v > 0) expensesTotal += v;
+          else if (v < 0 && name.includes("refund")) expensesTotal += 0;
+          else if (v < 0) expensesTotal += Math.abs(v);
+        }
+      }
     } else {
-      // Fallback: sum category columns (exclude first few index columns and income columns)
       const start = Number.isFinite(categoryStart) ? categoryStart : 3;
       for (let i = start; i < header.length; i++) {
         if (incomeCols.includes(i)) continue;
         const name = String(header[i]).toLowerCase();
         if (!name || name.startsWith("col_")) continue;
         const v = toNum(r[i]);
-        if (v > 0) expensesTotal += v;          // typical expense columns are positive
-        else if (v < 0 && name.includes("refund")) expensesTotal += 0; // ignore refunds if present as negative
-        else if (v < 0) expensesTotal += Math.abs(v); // be safe
+        if (v > 0) expensesTotal += v;
+        else if (v < 0 && name.includes("refund")) expensesTotal += 0;
+        else if (v < 0) expensesTotal += Math.abs(v);
       }
     }
 
