@@ -1,3 +1,4 @@
-# Changes — v0.1b5
-- Add cards-only truth parser and reconciliation to compare Amex/MC vs card-relevant categories only.
-- HTML report: reports/reconcile-cards-<year>.html.
+# Changes — v0.1c1
+- Parse embedded bank sheets (e.g., 'David account', 'Sonya account') from Savings.xlsx
+- Suppress card-bill payments on bank side to avoid double counting
+- Add inspector + reconciliation that merges Amex/MC + embedded bank vs Detail

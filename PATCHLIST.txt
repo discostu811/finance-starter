@@ -1,2 +1,3 @@
-lib/truth_cards_only.ts
-scripts/reconcile-cards-only.ts
+lib/bank_embedded.ts
+scripts/inspect-embedded-bank.ts
+scripts/reconcile-embedded-bank.ts
