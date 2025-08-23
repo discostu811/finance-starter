@@ -1,2 +1,3 @@
 lib/amazon.ts
+scripts/amazon-viz.ts
 scripts/etl-compare-2024-suppressed.ts

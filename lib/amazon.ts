@@ -1,5 +1,5 @@
-// CANARY: finance-starter v0.1b2 (amazon-suppress)
-// lib/amazon.ts — Amazon detection/matching + suppression toggle
+// CANARY: finance-starter v0.1b3 (amazon-suppress + group match + viz helpers)
+// lib/amazon.ts — Amazon detection/matching (+ 1:N grouping) + suppression toggle
 
 import * as XLSX from "xlsx";
 import dayjs from "dayjs";
@@ -16,14 +16,11 @@ export type AmazonParent = {
   raw: Record<string, any>;
 };
 
+export type MatchPair = { parent: AmazonParent, detail: AmazonDetail };
+export type GroupMatch = { parent: AmazonParent, details: AmazonDetail[], total: number };
+
 export const AMAZON_PATTERNS: RegExp[] = [
-  /\bamazon\b/i,
-  /\bamzn\b/i,
-  /amznmktplace/i,
-  /amazon eu/i,
-  /amzn digital/i,
-  /amazon prime/i,
-  /amzn prime/i,
+  /\bamazon\b/i, /\bamzn\b/i, /amznmktplace/i, /amazon eu/i, /amzn digital/i, /amazon prime/i, /amzn prime/i,
 ];
 
 export function looksAmazon(merchant?: string): boolean {
@@ -84,6 +81,7 @@ function toAmount(v:any): number | undefined {
   const n = Number(String(v).replace(/[£$, ]/g, ""));
   return Number.isFinite(n) ? Math.abs(n) : undefined;
 }
+const two = (n:number)=> Math.round(n*100)/100;
 
 // ---------- extract Amazon detail from workbook (given year) ----------
 export function extractAmazonDetailFromWorkbook(wb: XLSX.WorkBook, year: number): AmazonDetail[] {
@@ -109,13 +107,14 @@ export function extractAmazonDetailFromWorkbook(wb: XLSX.WorkBook, year: number)
   return out;
 }
 
-// ---------- matching ----------
+// ---------- 1:1 matching ----------
 export function matchAmazonParentsToDetail(
   parents: AmazonParent[],
-  details: AmazonDetail[]
+  details: AmazonDetail[],
+  opts = { daysWindow: 5 }
 ) {
   const byAmt = new Map<string, AmazonDetail[]>();
-  const key = (x:number)=> (Math.round(x*100)/100).toFixed(2);
+  const key = (x:number)=> two(x).toFixed(2);
 
   for (const d of details) {
     if (d.amount == null) continue;
@@ -125,7 +124,7 @@ export function matchAmazonParentsToDetail(
     byAmt.set(k, arr);
   }
 
-  const matched: Array<{parent: AmazonParent, detail: AmazonDetail}> = [];
+  const matched: MatchPair[] = [];
   const unmatchedParents: AmazonParent[] = [];
   const used = new Set<AmazonDetail>();
 
@@ -140,7 +139,7 @@ export function matchAmazonParentsToDetail(
       if (!d.detailDate) { best = d; break; }
       const dd = dayjs(d.detailDate);
       const diff = Math.abs(dd.diff(pd, "day"));
-      if (diff <= 5) { best = d; break; }
+      if (diff <= opts.daysWindow) { best = d; break; }
     }
 
     if (best) { matched.push({ parent: p, detail: best }); used.add(best); }
@@ -151,13 +150,101 @@ export function matchAmazonParentsToDetail(
   return { matched, unmatchedParents, unmatchedDetails };
 }
 
+// ---------- 1:N grouping (up to 3) ----------
+export function matchAmazonParentsWithGrouping(
+  parents: AmazonParent[],
+  details: AmazonDetail[],
+  opts = { daysWindow: 7, maxGroup: 3 }
+): { singles: MatchPair[]; groups: GroupMatch[]; unmatchedParents: AmazonParent[]; unmatchedDetails: AmazonDetail[] } {
+
+  // First do 1:1 to lock in obvious cases
+  const base = matchAmazonParentsToDetail(parents, details, { daysWindow: Math.min(opts.daysWindow, 5) });
+  const singles = base.matched;
+  const usedDetail = new Set<AmazonDetail>(singles.map(m => m.detail));
+  const oneToOneParents = new Set<AmazonParent>(singles.map(m => m.parent));
+
+  const remainingParents = base.unmatchedParents;
+  const remainingDetails = base.unmatchedDetails;
+
+  // Helper: candidates within date window and amount <= parent
+  function candidatesFor(p: AmazonParent): AmazonDetail[] {
+    const pd = dayjs(p.postedDate);
+    return remainingDetails.filter(d => {
+      if (!d.amount) return false;
+      if (d.amount > p.amount + 0.005) return false;
+      if (!d.detailDate) return true; // allow missing date if amount fits
+      const dd = dayjs(d.detailDate);
+      return Math.abs(dd.diff(pd, "day")) <= opts.daysWindow;
+    });
+  }
+
+  const groups: GroupMatch[] = [];
+  const used = new Set<AmazonDetail>(); // used by groups only (separate from 1:1 set)
+
+  // Try 2-sum then 3-sum
+  for (const p of remainingParents) {
+    const cands = candidatesFor(p).filter(d => !used.has(d));
+    const target = two(p.amount);
+    let found: AmazonDetail[] | undefined;
+
+    // 2-sum with hash (rounded to cents)
+    const seen = new Map<string, AmazonDetail>();
+    for (const d of cands) {
+      const a = two(d.amount!);
+      const need = two(target - a);
+      const keyNeed = need.toFixed(2);
+      if (seen.has(keyNeed)) {
+        found = [seen.get(keyNeed)!, d];
+        break;
+      }
+      seen.set(a.toFixed(2), d);
+    }
+
+    // 3-sum (n^2)
+    if (!found && opts.maxGroup >= 3) {
+      for (let i = 0; i < cands.length; i++) {
+        const a = two(cands[i].amount!);
+        const t2 = two(target - a);
+        const seen2 = new Map<string, AmazonDetail>();
+        for (let j = i + 1; j < cands.length; j++) {
+          const b = two(cands[j].amount!);
+          const need = two(t2 - b);
+          const keyNeed = need.toFixed(2);
+          if (seen2.has(keyNeed)) {
+            found = [seen2.get(keyNeed)!, cands[j], cands[i]];
+            break;
+          }
+          seen2.set(b.toFixed(2), cands[j]);
+        }
+        if (found) break;
+      }
+    }
+
+    if (found) {
+      found.forEach(f => used.add(f));
+      groups.push({ parent: p, details: found, total: two(found.reduce((s, d) => s + (d.amount || 0), 0)) });
+    }
+  }
+
+  // Compute unmatched sets
+  const groupedParents = new Set(groups.map(g => g.parent));
+  const unmatchedParents = remainingParents.filter(p => !groupedParents.has(p));
+
+  const unmatchedDetails = remainingDetails.filter(d => !used.has(d));
+
+  return { singles, groups, unmatchedParents, unmatchedDetails };
+}
+
 // ---------- suppression ----------
 export function suppressMatchedAmazonParents(
   parents: AmazonParent[],
   details: AmazonDetail[]
 ): { kept: AmazonParent[], suppressed: AmazonParent[] } {
-  const { matched } = matchAmazonParentsToDetail(parents, details);
-  const suppressed = matched.map(m => m.parent);
+  const { singles, groups } = matchAmazonParentsWithGrouping(parents, details);
+  const suppressed = [
+    ...singles.map(m => m.parent),
+    ...groups.map(g => g.parent),
+  ];
   const set = new Set(suppressed);
   const kept = parents.filter(p => !set.has(p));
   return { kept, suppressed };
