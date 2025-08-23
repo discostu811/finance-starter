@@ -1,4 +1,2 @@
-# PATCHLIST — finance-v0.1a4-patch6
-lib/xlsx.ts
-CHANGES.md
-PATCHLIST.txt
+lib/amazon.ts
+scripts/etl-compare-2024-suppressed.ts
