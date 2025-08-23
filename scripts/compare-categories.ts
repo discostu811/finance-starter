@@ -1,7 +1,4 @@
-// CANARY: finance-starter v0.1c11 (category comparison, robust suppression handling)
-// Compares per-month, per-category (from card sources) against Detail ground truth.
-// Uses your sheet category fields directly (no guessing).
-
+// CANARY: finance-starter v0.1c12 (category comparison: only show card-spend cats)
 import * as XLSX from "xlsx";
 import { loadWorkbook } from "../lib/xlsx";
 import { parseAmex2024, parseMC2024, CardTxn } from "../lib/parse_cards";
@@ -13,62 +10,53 @@ import { extractDetailMonthly, extractDetailCategories } from "../lib/detail";
 
 const file = process.argv[2] || "./data/Savings.xlsx";
 const year = Number(process.argv[3] || 2024);
-
 const wb = loadWorkbook(file);
 
-// 1) Load card txns
+// 1) Load cards
 let amex: CardTxn[] = parseAmex2024(wb);
 let mc:   CardTxn[] = parseMC2024(wb);
 
-// 2) Optional: suppress Amazon parent rows if matching Amazon detail exists
+// 2) Optional Amazon suppression
 if (process.env.AMAZON_SUPPRESS_PARENTS === "1") {
   const detail = extractAmazonDetailFromWorkbook(wb, year);
-  const beforeCount = amex.length + mc.length;
-
-  // Some versions return { amex, mc, suppressedCount, suppressedAmount }
-  // Others may side-effect and return void. Handle both safely.
+  const before = amex.length + mc.length;
   const sup: any = suppressMatchedAmazonParents(amex, mc, detail);
-
   if (sup && sup.amex && sup.mc) {
-    amex = sup.amex as CardTxn[];
-    mc   = sup.mc   as CardTxn[];
-    const cnt = typeof sup.suppressedCount === "number" ? sup.suppressedCount : (beforeCount - (amex.length + mc.length));
+    amex = sup.amex; mc = sup.mc;
+    const cnt = typeof sup.suppressedCount === "number" ? sup.suppressedCount : (before - (amex.length + mc.length));
     const amt = typeof sup.suppressedAmount === "number" ? sup.suppressedAmount : 0;
     console.log(`Amazon parents suppressed: ${cnt} txns${amt ? `, £${amt.toFixed(2)}` : ""}`);
   } else {
-    const afterCount = amex.length + mc.length;
-    const cnt = beforeCount - afterCount;
-    console.log(`Amazon parents suppressed (side-effect mode): ${cnt} txns`);
+    const after = amex.length + mc.length;
+    console.log(`Amazon parents suppressed (side-effect mode): ${before - after} txns`);
   }
 }
 
-const cards = [...amex, ...mc];
+// 3) Build month/category totals from cards using their sheet-provided category values
+const cards = [...amex, ...mc].filter(t => (t.categoryRaw ?? "").toString().trim().length > 0);
 
-// Keep only rows that have a category string
-const cardsWithCat = cards.filter(t => (t.categoryRaw ?? "").toString().trim().length > 0);
-
-// 3) Build per-month, per-category totals from cards (expenses positive)
 type CatBuckets = Record<string, number>;
 const perMonthCards: CatBuckets[] = Array.from({ length: 12 }, () => ({}));
 
-for (const t of cardsWithCat) {
-  const m = Number(t.postedDate?.slice(5, 7)); // "YYYY-MM-DD"
+for (const t of cards) {
+  const m = Number(t.postedDate?.slice(5, 7)); // YYYY-MM-DD
   if (!m || m < 1 || m > 12) continue;
   const cat = (t.categoryRaw ?? "").toString().trim();
   perMonthCards[m - 1][cat] = (perMonthCards[m - 1][cat] || 0) + (t.amount || 0);
 }
-// Keep only positive expense flow per category (refunds/payments become 0 here)
+
+// Only keep positive spend by category (ignore card payments/refunds)
 for (let i = 0; i < 12; i++) {
   for (const k of Object.keys(perMonthCards[i])) {
     perMonthCards[i][k] = perMonthCards[i][k] > 0 ? perMonthCards[i][k] : 0;
   }
 }
 
-// 4) Load Detail per-month totals
-const detailMonthly = extractDetailMonthly(wb, year); // array[12] of { category: amount }
-const detailCats = new Set(extractDetailCategories(wb)); // all Detail column names
+// 4) Detail monthly
+const detailMonthly = extractDetailMonthly(wb, year);
+const detailCats = new Set(extractDetailCategories(wb));
 
-// 5) Compare
+// 5) Compare — only categories with any card spend this month
 function f2(n: number) { return Number((n ?? 0).toFixed(2)); }
 
 console.log(`\nCategory reconciliation (Cards vs Detail) — ${year}`);
@@ -79,16 +67,12 @@ for (let m = 1; m <= 12; m++) {
   const monthCards = perMonthCards[m - 1] || {};
   const monthDetail = detailMonthly[m - 1] || {};
 
-  const keys = new Set<string>([
-    ...Object.keys(monthCards),
-    ...Object.keys(monthDetail),
-  ]);
-
-  // Only show categories that exist in Detail’s columns
-  const catsToShow = [...keys].filter(k => detailCats.has(k));
+  const catsToShow = Object.keys(monthCards)
+    .filter(k => (monthCards[k] || 0) > 0)               // must have card spend
+    .filter(k => detailCats.has(k));                     // must be a real Detail category
 
   if (catsToShow.length === 0) {
-    console.log(`${String(m).padStart(5)} | (no overlapping categories this month)`);
+    console.log(`${String(m).padStart(5)} | (no card-category spend this month)`);
     continue;
   }
 
