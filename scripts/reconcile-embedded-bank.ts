@@ -1,4 +1,4 @@
-// CANARY: finance-starter v0.1c1 (reconcile Amex+MC+EmbeddedBank vs Detail)
+// CANARY: finance-starter v0.1c3 (tidy reconciliation print)
 import { loadWorkbook, parseCardSheet } from "../lib/xlsx";
 import { parseDetailTruthSheet } from "../lib/truth";
 import { looksAmazon, extractAmazonDetailFromWorkbook, suppressMatchedAmazonParents, AmazonParent } from "../lib/amazon";
@@ -17,7 +17,7 @@ const amex = amexName ? parseCardSheet(wb.Sheets[amexName], "amex") : [];
 const mc   = mcName   ? parseCardSheet(wb.Sheets[mcName], "mc")   : [];
 let all = [...amex, ...mc];
 
-// Amazon parent suppression (cards)
+// Amazon parent suppression
 if (SUPPRESS_AMZ) {
   const parents: AmazonParent[] = all
     .filter(t => looksAmazon(t.merchantRaw || t.descriptionRaw))
@@ -29,7 +29,7 @@ if (SUPPRESS_AMZ) {
   console.log(`Amazon parents suppressed: ${suppressed.length} txns, £${suppressed.reduce((a,b)=>a+b.amount,0).toFixed(2)}`);
 }
 
-// Embedded bank (David/Sonya account)
+// Embedded bank
 let bank = parseAllEmbeddedBank(wb, year);
 const before = bank.length;
 bank = suppressCardBillPayments(bank);
@@ -39,10 +39,11 @@ if (after !== before) {
 }
 all = [...all, ...bank];
 
-// Truth (full Detail, with our improved fallback)
+// Truth
 const detailName = wb.SheetNames.find(n => n.toLowerCase() === "detail");
 const truth = detailName ? parseDetailTruthSheet(wb.Sheets[detailName], year) : [];
 
+// Rollup
 const incExpByMonth: Record<number, { inc: number; exp: number }> = {};
 for (const t of all) {
   const m = Number(t.postedDate.slice(5,7));
@@ -51,6 +52,7 @@ for (const t of all) {
   else incExpByMonth[m].exp += t.amount;                // expense
 }
 
+// Print
 console.log(`\nReconciliation (Cards + Embedded Bank) — ${year}`);
 console.log("Month |   Inc(Our)   Inc(Truth)   ΔIncome |   Exp(Our)   Exp(Truth)    ΔExp");
 console.log("------+-----------------------------------+--------------------------------");
@@ -63,5 +65,7 @@ for (let m = 1; m <= 12; m++) {
   const dExp = +(ours.exp - expTruth).toFixed(2);
   const okInc = dInc === 0 ? "✅" : "❌";
   const okExp = dExp === 0 ? "✅" : "❌";
-  console.log(`${String(m).padStart(5)} | ${ours.inc.toFixed(2).padStart(10)} ${incTruth.toFixed(2).padStart(10)} ${dInc.toFixed(10)} ${okInc} | ${ours.exp.toFixed(10)} ${expTruth.toFixed(10)} ${dExp.toFixed(10)} ${okExp}`);
+  console.log(
+    `${String(m).padStart(5)} | ${ours.inc.toFixed(2).padStart(10)} ${incTruth.toFixed(2).padStart(10)} ${dInc.toFixed(2).padStart(10)} ${okInc} | ${ours.exp.toFixed(10)} ${expTruth.toFixed(10)} ${dExp.toFixed(2).padStart(10)} ${okExp}`
+  );
 }
