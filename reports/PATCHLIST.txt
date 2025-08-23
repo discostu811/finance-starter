@@ -1,0 +1,4 @@
+lib/bank.ts
+scripts/inspect-bank.ts
+data/bank-schemas/example-hsbc-2024.json
+scripts/reconcile-with-bank.ts

@@ -1,0 +1,8 @@
+{
+  "date": "Date",
+  "description": "Description",
+  "debit": "Debit",
+  "credit": "Credit",
+  "currency": "Currency",
+  "dateFormat": "DD/MM/YYYY"
+}
