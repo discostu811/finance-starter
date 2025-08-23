@@ -1,3 +1,2 @@
-lib/truth.ts
-scripts/reconcile-viz.ts
-scripts/etl-compare-2024-suppressed.ts
+lib/truth_cards_only.ts
+scripts/reconcile-cards-only.ts
