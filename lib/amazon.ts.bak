@@ -1,5 +1,3 @@
-
-function asArr<T>(x: T[] | T | undefined | null): T[] { return Array.isArray(x) ? x : (x != null ? [x] : []); }
 // CANARY: finance-starter v0.1b3 (amazon-suppress + group match + viz helpers)
 // lib/amazon.ts — Amazon detection/matching (+ 1:N grouping) + suppression toggle
 
@@ -115,12 +113,6 @@ export function matchAmazonParentsToDetail(
   details: AmazonDetail[],
   opts = { daysWindow: 5 }
 ) {
-  // normalize possibly non-array inputs
-  // @ts-ignore
-  details = asArr(details);
-  // @ts-ignore
-  parents = asArr(parents);
-
   const byAmt = new Map<string, AmazonDetail[]>();
   const key = (x:number)=> two(x).toFixed(2);
 
@@ -137,7 +129,7 @@ for (const d of __arr) {
   const unmatchedParents: AmazonParent[] = [];
   const used = new Set<AmazonDetail>();
 
-  for (const p of asArr(parents)) {
+  for (const p of parents) {
     const k = key(p.amount);
     const cands = byAmt.get(k) || [];
     const pd = dayjs(p.postedDate);
@@ -155,7 +147,7 @@ for (const d of __arr) {
     else unmatchedParents.push(p);
   }
 
-  const unmatchedDetails = asArr(details).filter(d => !used.has(d));
+  const unmatchedDetails = details.filter(d => !used.has(d));
   return { matched, unmatchedParents, unmatchedDetails };
 }
 
@@ -255,6 +247,6 @@ export function suppressMatchedAmazonParents(
     ...groups.map(g => g.parent),
   ];
   const set = new Set(suppressed);
-  const kept = asArr(parents).filter(p => !set.has(p));
+  const kept = parents.filter(p => !set.has(p));
   return { kept, suppressed };
 }
