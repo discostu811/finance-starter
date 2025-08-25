@@ -1,5 +1,5 @@
 // version: v0.1b1
-// date: 2025-08-25 08:50 Europe/London
+// date: 2025-08-25 08:51 Europe/London
 // changelog: slice: fix Amex 2024 date parsing
 // compare-categories-by-source.ts — rebuilt clean
 // Goal: reconcile per-month, per-category totals between (a) card sheets and (b) bank rows.

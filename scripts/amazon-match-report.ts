@@ -1,3 +1,6 @@
+// version: v0.1b1
+// date: 2025-08-25 08:51 Europe/London
+// changelog: slice: fix Amex 2024 date parsing
 // scripts/amazon-match-report.ts
 // v0.1b — probe: report proposed Amazon parent↔detail matches (no ETL suppression)
 
