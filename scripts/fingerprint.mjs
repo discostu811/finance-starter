@@ -1,6 +1,6 @@
-// version: finance-v1.2.2
-// date: 2025-08-25 08:34 Europe/London
-// changelog: JS-only deterministic SHA256 manifest (no TypeScript needed)
+// version: v0.1b1
+// date: 2025-08-25 08:50 Europe/London
+// changelog: slice: fix Amex 2024 date parsing
 
 import { createHash } from 'node:crypto';
 import fs from 'node:fs/promises';

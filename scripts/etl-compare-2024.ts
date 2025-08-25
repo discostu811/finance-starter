@@ -1,3 +1,6 @@
+// version: v0.1b1
+// date: 2025-08-25 08:50 Europe/London
+// changelog: slice: fix Amex 2024 date parsing
 // scripts/etl-compare-2024.ts
 import * as XLSX from 'xlsx';
 import { loadWorkbook, parseCardSheet, parseDetailTruth } from '../lib/xlsx';

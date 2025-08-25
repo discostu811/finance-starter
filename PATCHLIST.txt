@@ -1,3 +1,5 @@
-lib/bank_embedded.ts
-scripts/inspect-embedded-bank.ts
-scripts/reconcile-embedded-bank.ts
+# PATCHLIST — finance-v0.1b
+lib/amazon.ts
+scripts/amazon-match-report.ts
+CHANGES.md
+PATCHLIST.txt

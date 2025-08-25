@@ -1,3 +1,6 @@
+// version: v0.1b1
+// date: 2025-08-25 08:50 Europe/London
+// changelog: slice: fix Amex 2024 date parsing
 // scripts/debug-reheader.ts
 import { loadWorkbook, extractSheet } from "../lib/xlsx";
 import * as XLSX from "xlsx";

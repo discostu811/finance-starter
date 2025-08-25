@@ -1,6 +1,6 @@
-// version: finance-v1.2.1
-// date: 2025-08-25 08:24 Europe/London
-// changelog: header updater for version/date/changelog (zip-only workflow)
+// version: v0.1b1
+// date: 2025-08-25 08:50 Europe/London
+// changelog: slice: fix Amex 2024 date parsing
 
 import { promises as fs } from "fs";
 import * as path from "path";

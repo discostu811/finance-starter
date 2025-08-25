@@ -1,3 +1,6 @@
+// version: v0.1b1
+// date: 2025-08-25 08:50 Europe/London
+// changelog: slice: fix Amex 2024 date parsing
 // CANARY: finance-starter v0.1c7 (compare monthly TRAVEL vs Detail)
 import { loadWorkbook } from "../lib/xlsx";
 import { parseAllEmbeddedBank, suppressCardBillPayments, BankTxn } from "../lib/bank_embedded";

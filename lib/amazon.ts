@@ -1,70 +1,88 @@
-
-function asArr<T>(x: T[] | T | undefined | null): T[] { return Array.isArray(x) ? x : (x != null ? [x] : []); }
-// CANARY: finance-starter v0.1b3 (amazon-suppress + group match + viz helpers)
-// lib/amazon.ts — Amazon detection/matching (+ 1:N grouping) + suppression toggle
+// lib/amazon.ts
+// v0.1b — Amazon detection + A1 detail extractor + matcher (amount + ±5 days)
 
 import * as XLSX from "xlsx";
 import dayjs from "dayjs";
 
 export type AmazonDetail = {
-  sheet: string; rowIndex: number;
-  detailDate?: string; amount?: number; raw: Record<string, any>;
+  sheet: string;
+  rowIndex: number;
+  detailDate?: string;  // YYYY-MM-DD
+  amount?: number;      // positive
+  raw: Record<string, any>;
 };
+
 export type AmazonParent = {
   source: "amex" | "mc";
   postedDate: string;   // YYYY-MM-DD
-  amount: number;       // positive expense for matching
+  amount: number;       // positive expense amount
   merchant: string;
   raw: Record<string, any>;
 };
 
-export type MatchPair = { parent: AmazonParent, detail: AmazonDetail };
-export type GroupMatch = { parent: AmazonParent, details: AmazonDetail[], total: number };
-
 export const AMAZON_PATTERNS: RegExp[] = [
-  /\bamazon\b/i, /\bamzn\b/i, /amznmktplace/i, /amazon eu/i, /amzn digital/i, /amazon prime/i, /amzn prime/i,
+  /\bamazon\b/i,
+  /\bamzn\b/i,
+  /amznmktplace/i,
+  /amazon eu/i,
+  /amzn digital/i,
+  /amazon prime/i,
+  /amzn prime/i,
 ];
 
 export function looksAmazon(merchant?: string): boolean {
   if (!merchant) return false;
-  return AMAZON_PATTERNS.some(rx => rx.test(merchant.trim()));
+  const m = merchant.trim();
+  return AMAZON_PATTERNS.some(rx => rx.test(m));
 }
 
-// ---------- A1 helpers ----------
+// ---- A1 header detection ----
 function a1(ws: XLSX.WorkSheet): any[][] {
   return XLSX.utils.sheet_to_json(ws, { defval: null, raw: true, header: 1 }) as any[][];
 }
+
 function findHeaderIdx(grid: any[][]): number {
-  const needles = ["date","order date","transaction date","posted","description","amount","total","grand total"];
-  for (let i = 0; i < Math.min(500, grid.length); i++) {
+  const needles = ["date","order date","transaction date","payment date","posted","description","amount","total","grand total"];
+  for (let i = 0; i < Math.min(800, grid.length); i++) {
     const row = grid[i] ?? [];
     const txt = row.map((c:any)=>String(c ?? "").toLowerCase());
-    if (txt.filter(t => t !== "").length < 3) continue;
+    const nonEmpty = txt.filter(t => t !== "").length;
+    if (nonEmpty < 3) continue;
     if (needles.some(n => txt.some(t => t.includes(n)))) return i;
   }
   return -1;
 }
+
 function mapRowsByHeader(ws: XLSX.WorkSheet): Record<string, any>[] {
   const grid = a1(ws);
   if (!grid.length) return [];
-  const idx = findHeaderIdx(grid);
-  if (idx < 0) return XLSX.utils.sheet_to_json(ws, { defval: null, raw: true });
-  const hdr = (grid[idx] ?? []).map((h:any,i:number) => {
+  let idx = findHeaderIdx(grid);
+  if (idx < 0) {
+    return XLSX.utils.sheet_to_json(ws, { defval: null, raw: true });
+  }
+  const hdr = (grid[idx] ?? []).map((h:any,i:number)=>{
     const s = h == null ? "" : String(h).trim();
     return s === "" ? `col_${i}` : s;
   });
-  const body = grid.slice(idx + 1);
+  const body = grid.slice(idx+1);
   return body.map((r:any[]) => Object.fromEntries(hdr.map((k,i)=>[k, r[i] ?? null])));
 }
 
-// ---------- normalizers ----------
+// ---- key pickers ----
 function pickKey(row: Record<string,any>, wants: string[]): string | undefined {
   const keys = Object.keys(row || {});
   const lower = keys.map(k => k.toLowerCase().trim());
-  for (const w of wants) { const i = lower.indexOf(w.toLowerCase()); if (i >= 0) return keys[i]; }
-  for (const w of wants) { const i = lower.findIndex(k => k.includes(w.toLowerCase())); if (i >= 0) return keys[i]; }
+  for (const w of wants) {
+    const i = lower.indexOf(w.toLowerCase());
+    if (i >= 0) return keys[i];
+  }
+  for (const w of wants) {
+    const i = lower.findIndex(k => k.includes(w.toLowerCase()));
+    if (i >= 0) return keys[i];
+  }
   return undefined;
 }
+
 function normalizeDateAny(v:any): string | undefined {
   if (v == null || v === "") return undefined;
   if (typeof v === "number") {
@@ -75,57 +93,49 @@ function normalizeDateAny(v:any): string | undefined {
   const t = String(v).trim();
   const fmts = ["YYYY-MM-DD","DD/MM/YYYY","MM/DD/YYYY","D/M/YYYY","M/D/YYYY","YYYY/M/D","DD.MM.YYYY","D.M.YYYY","YYYY.MM.DD"];
   for (const f of fmts) { const d = dayjs(t, f, true); if (d.isValid()) return d.format("YYYY-MM-DD"); }
-  const d = dayjs(t); return d.isValid() ? d.format("YYYY-MM-DD") : undefined;
+  const d = dayjs(t); if (d.isValid()) return d.format("YYYY-MM-DD");
+  return undefined;
 }
+
 function toAmount(v:any): number | undefined {
   if (v == null || v === "") return undefined;
   if (typeof v === "number") return Math.abs(v);
-  const n = Number(String(v).replace(/[£$, ]/g, ""));
+  const n = Number(String(v).replace(/[£$, ]/g,""));
   return Number.isFinite(n) ? Math.abs(n) : undefined;
 }
-const two = (n:number)=> Math.round(n*100)/100;
 
-// ---------- extract Amazon detail from workbook (given year) ----------
+// ---- extract Amazon detail rows from all "amazon" sheets for a given year ----
 export function extractAmazonDetailFromWorkbook(wb: XLSX.WorkBook, year: number): AmazonDetail[] {
   const out: AmazonDetail[] = [];
   for (const name of wb.SheetNames) {
     const n = name.toLowerCase();
     if (!(n.includes("amazon") || n.includes("amzn"))) continue;
-    if (!n.includes(String(year))) continue; // limit to that year
+    if (!n.includes(String(year))) continue; // restrict to year
     const ws = wb.Sheets[name];
     const rows = mapRowsByHeader(ws);
     if (!rows.length) continue;
 
+    // choose columns
     const kd = pickKey(rows[0], ["Order Date","Date","Transaction Date","Payment Date"]);
     const ka = pickKey(rows[0], ["Grand Total","Order Total","Total","Amount","GBP","Item Total","Total Charged"]);
-
     rows.forEach((r, i) => {
       const detailDate = normalizeDateAny(kd ? r[kd] : undefined);
       const amount = toAmount(ka ? r[ka] : undefined);
       if (!amount) return;
-      out.push({ sheet: name, rowIndex: i + 1, detailDate, amount, raw: r });
+      out.push({ sheet: name, rowIndex: i+1, detailDate, amount, raw: r });
     });
   }
   return out;
 }
 
-// ---------- 1:1 matching ----------
+// simple matcher: amount exact (pennies) and date within ±5 days
 export function matchAmazonParentsToDetail(
   parents: AmazonParent[],
-  details: AmazonDetail[],
-  opts = { daysWindow: 5 }
+  details: AmazonDetail[]
 ) {
-  // normalize possibly non-array inputs
-  // @ts-ignore
-  details = asArr(details);
-  // @ts-ignore
-  parents = asArr(parents);
-
   const byAmt = new Map<string, AmazonDetail[]>();
-  const key = (x:number)=> two(x).toFixed(2);
-
-  const __arr = Array.isArray(details) ? details : [];
-for (const d of __arr) {
+  const key = (x:number)=> (Math.round(x*100)/100).toFixed(2);
+  for (const d of details) {
     if (d.amount == null) continue;
     const k = key(d.amount);
     const arr = byAmt.get(k) || [];
@@ -133,128 +143,26 @@ for (const d of __arr) {
     byAmt.set(k, arr);
   }
 
-  const matched: MatchPair[] = [];
+  const matched: Array<{parent: AmazonParent, detail: AmazonDetail}> = [];
   const unmatchedParents: AmazonParent[] = [];
   const used = new Set<AmazonDetail>();
 
-  for (const p of asArr(parents)) {
+  for (const p of parents) {
     const k = key(p.amount);
     const cands = byAmt.get(k) || [];
     const pd = dayjs(p.postedDate);
     let best: AmazonDetail | undefined;
-
     for (const d of cands) {
       if (used.has(d)) continue;
       if (!d.detailDate) { best = d; break; }
       const dd = dayjs(d.detailDate);
       const diff = Math.abs(dd.diff(pd, "day"));
-      if (diff <= opts.daysWindow) { best = d; break; }
+      if (diff <= 5) { best = d; break; }
     }
-
     if (best) { matched.push({ parent: p, detail: best }); used.add(best); }
     else unmatchedParents.push(p);
   }
 
-  const unmatchedDetails = asArr(details).filter(d => !used.has(d));
+  const unmatchedDetails = details.filter(d => !used.has(d));
   return { matched, unmatchedParents, unmatchedDetails };
-}
-
-// ---------- 1:N grouping (up to 3) ----------
-export function matchAmazonParentsWithGrouping(
-  parents: AmazonParent[],
-  details: AmazonDetail[],
-  opts = { daysWindow: 7, maxGroup: 3 }
-): { singles: MatchPair[]; groups: GroupMatch[]; unmatchedParents: AmazonParent[]; unmatchedDetails: AmazonDetail[] } {
-
-  // First do 1:1 to lock in obvious cases
-  const base = matchAmazonParentsToDetail(parents, details, { daysWindow: Math.min(opts.daysWindow, 5) });
-  const singles = base.matched;
-  const usedDetail = new Set<AmazonDetail>(singles.map(m => m.detail));
-  const oneToOneParents = new Set<AmazonParent>(singles.map(m => m.parent));
-
-  const remainingParents = base.unmatchedParents;
-  const remainingDetails = base.unmatchedDetails;
-
-  // Helper: candidates within date window and amount <= parent
-  function candidatesFor(p: AmazonParent): AmazonDetail[] {
-    const pd = dayjs(p.postedDate);
-    return remainingDetails.filter(d => {
-      if (!d.amount) return false;
-      if (d.amount > p.amount + 0.005) return false;
-      if (!d.detailDate) return true; // allow missing date if amount fits
-      const dd = dayjs(d.detailDate);
-      return Math.abs(dd.diff(pd, "day")) <= opts.daysWindow;
-    });
-  }
-
-  const groups: GroupMatch[] = [];
-  const used = new Set<AmazonDetail>(); // used by groups only (separate from 1:1 set)
-
-  // Try 2-sum then 3-sum
-  for (const p of remainingParents) {
-    const cands = candidatesFor(p).filter(d => !used.has(d));
-    const target = two(p.amount);
-    let found: AmazonDetail[] | undefined;
-
-    // 2-sum with hash (rounded to cents)
-    const seen = new Map<string, AmazonDetail>();
-    for (const d of cands) {
-      const a = two(d.amount!);
-      const need = two(target - a);
-      const keyNeed = need.toFixed(2);
-      if (seen.has(keyNeed)) {
-        found = [seen.get(keyNeed)!, d];
-        break;
-      }
-      seen.set(a.toFixed(2), d);
-    }
-
-    // 3-sum (n^2)
-    if (!found && opts.maxGroup >= 3) {
-      for (let i = 0; i < cands.length; i++) {
-        const a = two(cands[i].amount!);
-        const t2 = two(target - a);
-        const seen2 = new Map<string, AmazonDetail>();
-        for (let j = i + 1; j < cands.length; j++) {
-          const b = two(cands[j].amount!);
-          const need = two(t2 - b);
-          const keyNeed = need.toFixed(2);
-          if (seen2.has(keyNeed)) {
-            found = [seen2.get(keyNeed)!, cands[j], cands[i]];
-            break;
-          }
-          seen2.set(b.toFixed(2), cands[j]);
-        }
-        if (found) break;
-      }
-    }
-
-    if (found) {
-      found.forEach(f => used.add(f));
-      groups.push({ parent: p, details: found, total: two(found.reduce((s, d) => s + (d.amount || 0), 0)) });
-    }
-  }
-
-  // Compute unmatched sets
-  const groupedParents = new Set(groups.map(g => g.parent));
-  const unmatchedParents = remainingParents.filter(p => !groupedParents.has(p));
-
-  const unmatchedDetails = remainingDetails.filter(d => !used.has(d));
-
-  return { singles, groups, unmatchedParents, unmatchedDetails };
-}
-
-// ---------- suppression ----------
-export function suppressMatchedAmazonParents(
-  parents: AmazonParent[],
-  details: AmazonDetail[]
-): { kept: AmazonParent[], suppressed: AmazonParent[] } {
-  const { singles, groups } = matchAmazonParentsWithGrouping(parents, details);
-  const suppressed = [
-    ...singles.map(m => m.parent),
-    ...groups.map(g => g.parent),
-  ];
-  const set = new Set(suppressed);
-  const kept = asArr(parents).filter(p => !set.has(p));
-  return { kept, suppressed };
 }

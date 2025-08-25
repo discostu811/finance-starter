@@ -1,3 +1,6 @@
+// version: v0.1b1
+// date: 2025-08-25 08:50 Europe/London
+// changelog: slice: fix Amex 2024 date parsing
 // CANARY: finance-starter v0.2a1 (bank inspector - buffer based)
 import * as XLSX from "xlsx";
 import fs from "fs";

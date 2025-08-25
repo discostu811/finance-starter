@@ -1,4 +1,11 @@
-# Changes — v0.1c1
-- Parse embedded bank sheets (e.g., 'David account', 'Sonya account') from Savings.xlsx
-- Suppress card-bill payments on bank side to avoid double counting
-- Add inspector + reconciliation that merges Amex/MC + embedded bank vs Detail
+# Changes — finance-v0.1b (probe)
+- Add **Amazon matching probe** (no ETL changes yet):
+  - `lib/amazon.ts` with detection and matching helpers.
+  - `scripts/amazon-match-report.ts` to report counts, sums, sample matched/unmatched, and a suppression preview.
+- Matching rule: exact amount (to pennies) and date within **±5 days**.
+- Restricts Amazon detail extraction to sheets whose names include the **year** (e.g., `Amazon 2024`).
+
+Run:
+```
+npx tsx scripts/amazon-match-report.ts ./data/Savings.xlsx 2024
+```

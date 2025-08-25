@@ -1,3 +1,6 @@
+// version: v0.1b1
+// date: 2025-08-25 08:50 Europe/London
+// changelog: slice: fix Amex 2024 date parsing
 // CANARY: finance-starter v0.1c9 (detail helpers)
 // Extract Detail categories and monthly truth totals for a given year.
 
