@@ -3,7 +3,6 @@
 // Robust to header variants; bank categories inferred from descriptions if no explicit field.
 
 import * as XLSX from "xlsx/xlsx.mjs";
-import { parseBankFile } from "../reports/lib/bank";
 import * as fs from "fs";
 XLSX.set_fs?.(fs);
 
@@ -14,7 +13,7 @@ const readWb = (filePath: string) => {
   const data = fs.readFileSync(filePath);
   return XLSX.read(data, { type: 'buffer' });
 };
-
+import { parseBankFile } from "../reports/lib/bank";
 
 type CardTxn = {
   source: "amex" | "mc";
@@ -190,7 +189,7 @@ async function main() {
   const amex = parseCardSheet(wb, year, "amex");
   const mc   = parseCardSheet(wb, year, "mc");
 
-  let bankArr = parseBankFile(excelPath, year);
+  let bankArr = parseAllEmbeddedBank(wb, year);
 
   if (process.env.DEBUG_BANK_CAT) {
     const allKeys = new Map<string, number>();

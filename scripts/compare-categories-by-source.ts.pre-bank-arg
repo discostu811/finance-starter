@@ -190,7 +190,7 @@ async function main() {
   const amex = parseCardSheet(wb, year, "amex");
   const mc   = parseCardSheet(wb, year, "mc");
 
-  let bankArr = parseBankFile(excelPath, year);
+  let bankArr = parseBankFile(wb, year);
 
   if (process.env.DEBUG_BANK_CAT) {
     const allKeys = new Map<string, number>();

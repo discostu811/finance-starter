@@ -2,19 +2,8 @@
 // Goal: reconcile per-month, per-category totals between (a) card sheets and (b) bank rows.
 // Robust to header variants; bank categories inferred from descriptions if no explicit field.
 
-import * as XLSX from "xlsx/xlsx.mjs";
-import { parseBankFile } from "../reports/lib/bank";
-import * as fs from "fs";
-XLSX.set_fs?.(fs);
-
-/** Robust workbook reader: works whether XLSX.readFile exists or not */
-const readWb = (filePath: string) => {
-  const rf: any = (XLSX as any).readFile;
-  if (typeof rf === 'function') return rf(filePath);
-  const data = fs.readFileSync(filePath);
-  return XLSX.read(data, { type: 'buffer' });
-};
-
+import * as XLSX from "xlsx";
+import { parseBankFile, suppressCardBillPayments } from "../reports/lib/bank";
 
 type CardTxn = {
   source: "amex" | "mc";
@@ -185,12 +174,12 @@ async function main() {
     process.exit(1);
   }
 
-  const wb = readWb(file, { cellDates: false });
+  const wb = XLSX.readFile(file, { cellDates: false });
 
   const amex = parseCardSheet(wb, year, "amex");
   const mc   = parseCardSheet(wb, year, "mc");
 
-  let bankArr = parseBankFile(excelPath, year);
+  let bankArr = parseAllEmbeddedBank(wb, year);
 
   if (process.env.DEBUG_BANK_CAT) {
     const allKeys = new Map<string, number>();
@@ -214,7 +203,7 @@ async function main() {
   }
 
   if (process.env.BANK_SUPPRESS_CARD_BILLS) {
-    bankArr = localSuppressCardBillPayments(bankArr);
+    bankArr = suppressCardBillPayments(bankArr);
   }
 
   const cards = [...amex, ...mc];
