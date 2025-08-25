@@ -4,3 +4,9 @@ node_modules
 finance-release-toolkit-*.zip
 *.bak
 _export/
+
+# local artifacts
+finance-release-toolkit-*.zip
+finance-v*-dryrun.zip
+*.bak
+_export/
