@@ -1,10 +1,10 @@
 {
-  "generated_at": "2025-08-25T08:51:33.400Z",
+  "generated_at": "2025-08-25T09:10:36.182Z",
   "entries": [
     {
       "path": "CHANGES.md",
-      "sha256": "14eac91c7055ece33399d8b0c439ab4c075922de13745475d5b2f5826076ec2d",
-      "bytes": 515
+      "sha256": "bef85bd9c39b6a7475cc7f319db33b69950a386abf09ac98bada127a57e5cf79",
+      "bytes": 591
     },
     {
       "path": "data/Savings.xlsx",
@@ -13,7 +13,7 @@
     },
     {
       "path": "lib/amazon.ts",
-      "sha256": "af2390086f3c7b021742aad8491910f9a2b2906833d28e291805f3f8f90fcd77",
+      "sha256": "c9914944dee0ad3c88a709e415a1bd0ad773de0661635c5e92b19f8d93ead640",
       "bytes": 5809
     },
     {
@@ -23,57 +23,57 @@
     },
     {
       "path": "lib/bank_embedded.ts",
-      "sha256": "4e5727e628ab1fcb692d31718402563ae5037391221047fd2d86645a75acf336",
+      "sha256": "7b39d2941896d3991047bb1c208459378b79bd2203d60bc15b7580600fa78752",
       "bytes": 6228
     },
     {
       "path": "lib/comparator.ts",
-      "sha256": "5a214988428d23ee15ad5fb9e0294e3b662767a18d8bd150fc0b1375d53f2497",
+      "sha256": "d361bc55f0310a230b9e214948f60e7b6a2e778923e173be5cab3fc950f61721",
       "bytes": 1953
     },
     {
       "path": "lib/detail.ts",
-      "sha256": "f19c7ee7d24db7faade82c579f80e37fd794b299f270cfae5193bf65a04c5690",
+      "sha256": "bc49e59f41480ffdf156126b150209b1a736662886e05342879fee48bd6a7dc0",
       "bytes": 1895
     },
     {
       "path": "lib/etl-filters.ts",
-      "sha256": "75cd168f7dd8cb5cbb22f8d4b70911011af462cb14e13597ee77292d515f397a",
+      "sha256": "7592a532d02b74ada581e237551c0c4f114e7995e538bddbdcdf2aefb1ce6db5",
       "bytes": 992
     },
     {
       "path": "lib/parse_cards.ts",
-      "sha256": "b7267ca887a84608535509ae4b0a67f151e68631c56452fc5da6975719f78c68",
+      "sha256": "68fc0f86e3e7bddb4948b77ab02ec89d75acb6fee64a7cf2d5964c684f77c6a0",
       "bytes": 4938
     },
     {
       "path": "lib/rollup.ts",
-      "sha256": "39a5420062ff64c9dbd8b6fe07e54bfca85f7dccd180d38084ca35296a0f567e",
+      "sha256": "898f48745a9da9ae69e6761d3ce9425e0307d10ac7566b13588dc36a4160c7c5",
       "bytes": 1143
     },
     {
       "path": "lib/suppress.ts",
-      "sha256": "ff922cda13d8a81efdb85e3e59399eb4b96be2f5d70628b917d51fba1459552f",
+      "sha256": "ad5387c70ce36cbca02af135a2fc06291d167c4f7ac331fc3e7af1c8ed716cdb",
       "bytes": 1915
     },
     {
-      "path": "lib/truth.ts",
-      "sha256": "33f467b9f6d036bdee1836e88706fd138ebb9012d5f60e73b91e95bb7db9f325",
-      "bytes": 6179
-    },
-    {
       "path": "lib/truth_cards_only.ts",
-      "sha256": "45310d0d299d542b94d9368dd3fa3c30e58896df38a70dd1f3aa78c5bfe32ee3",
+      "sha256": "c78af4a4761f42e79f084ec50716b44a50490850bc59d921b971db5a323b8a4a",
       "bytes": 3363
     },
     {
+      "path": "lib/truth.ts",
+      "sha256": "22bd43446eb0d0a112b7b44007023fa9e42808b3729858782c1ba7964c6c3c17",
+      "bytes": 6179
+    },
+    {
       "path": "lib/types.ts",
-      "sha256": "ea23713548dba934968e9f29a5a4b7e88354ebc41f2845c559ef88f07d35f4dc",
+      "sha256": "279b6920eb0b46083ecf6df72cd8131078f44fc26fdaa290b00a9f681f40b2bb",
       "bytes": 822
     },
     {
       "path": "lib/xlsx.ts",
-      "sha256": "b6751ad9660e4f314883815a3f3049141327ae5bff04e654d4bb768d7221cc59",
+      "sha256": "aed628e29127e1b2f5a30f8ce9e3857b6a093f4602ec0b511300af83abb19a91",
       "bytes": 854
     },
     {
@@ -83,37 +83,37 @@
     },
     {
       "path": "package.json",
-      "sha256": "6189818da1b0ab4a498d5b811ed53444cf317ce7e68da5f8c86fee0497ffcfaa",
-      "bytes": 624
+      "sha256": "d59a0517e897992dc50135bee67d7b0981d87d2c4cb354caf34624d743bc4cce",
+      "bytes": 623
     },
     {
       "path": "scripts/amazon-match-report.ts",
-      "sha256": "a572e0190948c2b8da48411bf9684d1a3fe538faa6274101bde3b677863b83f0",
+      "sha256": "cfbc3b49cfd2c619ac9629bc9479774fb2c37eaf69adb343a3b097bfbea6d537",
       "bytes": 2777
     },
     {
       "path": "scripts/amazon-viz.ts",
-      "sha256": "770ab5bf9a5b238386c5ffb22130ee3f88f8e96c42c76b7326ae9bab5b89ee9a",
+      "sha256": "97df87e9d4d9df91f2b1444601826004e7e2c0f1d1b62b2cfb5c8087b909b09f",
       "bytes": 6957
     },
     {
       "path": "scripts/amex-a1-parse.ts",
-      "sha256": "251c855ce2a7982851ea882653b92a260fb92150a9906b43d65420be569b5369",
+      "sha256": "0b8c0d775793877342762805777ea4ef601c41f38a6f73843ae98e229c63096e",
       "bytes": 2465
     },
     {
       "path": "scripts/bank-drilldown.ts",
-      "sha256": "488ba55eba6d357587d660a300e5b4210b9b5710829c21f868e3145282274bf9",
+      "sha256": "95e772b2884c9127e4c7a82ffa002473e05c268141b9702411a01c89f8126f19",
       "bytes": 2058
     },
     {
       "path": "scripts/cards-only-reconcile.ts",
-      "sha256": "bd25e14ecf2b512b8b318b6ef6217595c7c61b59179e029f792c2316eab7608e",
+      "sha256": "de137636dd7561ff5c3c31e79de66282db08d82b6c56c635463362f6b54cc0b5",
       "bytes": 4327
     },
     {
       "path": "scripts/compare-categories-by-source.ts",
-      "sha256": "c8ca17367d034b9c2651f8318eab402834b0c19f5f2c30d81ea0f1ec239b6265",
+      "sha256": "1d83e4e24512b9499be5b4954de755013435803800ae7b197ed04d5d07c306f4",
       "bytes": 10605
     },
     {
@@ -153,72 +153,72 @@
     },
     {
       "path": "scripts/compare-categories.ts",
-      "sha256": "efca8f44354ebb5b8b9631a410c368015b0159cc3039c403bfbed2224701e95b",
+      "sha256": "6d53a7333f83589cd692848b386899fecd4fb6323934fc4b812699b2570e63d8",
       "bytes": 3658
     },
     {
       "path": "scripts/compare-travel.ts",
-      "sha256": "3c06dd6ed5d464b43ff8793759c8fca6bea8ef6f852b1952a48b8cc6081683ed",
+      "sha256": "9233dfe8c30484c74a20cc755e33c73fa096f77132f8e9bc1422cdc20eb248a4",
       "bytes": 3583
     },
     {
       "path": "scripts/debug-parse.ts",
-      "sha256": "228e002ce6c59d6835664b28f88d6ee52985d76439cb6f40c96bdeb3b043593d",
+      "sha256": "200e017f2d5f101823c189aafeff7cb0300853b75866f7bea6eb8f57325834ba",
       "bytes": 1494
     },
     {
       "path": "scripts/debug-reheader.ts",
-      "sha256": "4ff9e0e73e551470ac6dd82ed9a8ef4f7be3cf7f19d9e6792f5a09df8509776a",
+      "sha256": "076ffccd46e30df1d85d1577c496dc82fb8c88ee6a9c44eb4cfbc270468cb956",
       "bytes": 607
     },
     {
       "path": "scripts/dump-card-headers.ts",
-      "sha256": "7c97cef500d4bc6e3a825be04d92cc6cc4ada075c5ac92c65804fccd4005c363",
+      "sha256": "d47c35ade94e0a9e4b340483e10cfdbc05b3cc2e0e33c313fea27c55518727ea",
       "bytes": 1161
     },
     {
       "path": "scripts/etl-compare-2024-suppressed.ts",
-      "sha256": "784eea27d93c5fc47da2f4f0d43d8304d7991ea9099d522830ead1ce8ad7a311",
+      "sha256": "33b9d5be9528c7cae7bf42ea3e9f9131d35729390a39a9c7c6ea6e7997df95ff",
       "bytes": 3164
     },
     {
       "path": "scripts/etl-compare-2024.ts",
-      "sha256": "40915639755d0d0196bff4f23afed5b3999c96aed2d505285038d1500e09008c",
+      "sha256": "4edc32ba9742e33e224fe6dafd3fcc42f960a6f9b304fbe50566894d3978ef32",
       "bytes": 2021
     },
     {
       "path": "scripts/find-amex-header.ts",
-      "sha256": "3131ae2c964bc5dbb0ccedf2ce90de343920b490d110ee7c820a7b006fcdbc2b",
+      "sha256": "4fcf018e238e165f23354316e86efa2d5329638afb1524b4b85b86516b8db666",
       "bytes": 1241
     },
     {
       "path": "scripts/fingerprint.mjs",
-      "sha256": "c9dad3778305467111993e7269f9d85556e7dfd0fc8c3dbc3c2c54c698fc8739",
-      "bytes": 2864
+      "sha256": "3d4acbb3da51c3f03121270b334c75316cfe516cb2ef965469bde6f010007602",
+      "bytes": 2836
     },
     {
       "path": "scripts/fingerprint.ts",
-      "sha256": "ee75ece87717224fa0bf6c084ef389babb804f56ba793f1d24921971b49539d7",
+      "sha256": "f7edcdc3ac2838c99e4d721984506b3689e3c97db3b7db3429357d09510f5192",
       "bytes": 3187
     },
     {
       "path": "scripts/inspect-bank.ts",
-      "sha256": "61802e7069babfe5475b8dda9de027a52d214389781a2e07abde50217c493f74",
+      "sha256": "45e97f339838ef4c2657bcd5e40de4791d460239b97f822a7a2ca305bdd92253",
       "bytes": 897
     },
     {
       "path": "scripts/inspect-embedded-bank.ts",
-      "sha256": "f612a3891550bb0f7d0f5276538c5ab27b4ede06a3a2042534f5278c089e171d",
+      "sha256": "49d66fa336d8c2c7858eac05eb0b64f1e125b2a79344613d019555f0e17ec0a5",
       "bytes": 1125
     },
     {
       "path": "scripts/inspect-headers.ts",
-      "sha256": "ca4b1b6b44807e8dd24889bfe8cab7a3143b3af2e32870cf78814b02d57fdd96",
+      "sha256": "9fa3256f3e4b94b0c7d5babe893800872ad34a1533c6cea78a5ff31c0ee002e1",
       "bytes": 2047
     },
     {
       "path": "scripts/lib/cards-robust.ts",
-      "sha256": "0c9990600d0af590a95af560df44397a95f7897e3ee331f051c750f20e107842",
+      "sha256": "331155bc074346f4e53014b75e9459d56fd7cda03c8f8d97f26b9e45647864d9",
       "bytes": 3232
     },
     {
@@ -228,62 +228,62 @@
     },
     {
       "path": "scripts/probe-global-money.ts",
-      "sha256": "527079a95e059c5805a090368eb43afccaccd3316e908bff6ece4f667c670c81",
+      "sha256": "a895c56182bdc707c70ef58e88dd76c6e8cb038495310a0d3f17b7a554b8fb08",
       "bytes": 1380
     },
     {
       "path": "scripts/reconcile-cards-only.ts",
-      "sha256": "12fa41161fdf6022e9ed73b3a8ce06b56fecaff6847a9d661ba62375fb6843a0",
+      "sha256": "7c104651188ba50afae5f3cc5ceaafb331f7a4bb7b9b51cca88211c2b04c5ed8",
       "bytes": 4304
     },
     {
       "path": "scripts/reconcile-embedded-bank.ts",
-      "sha256": "08a1b0719c095194b769a56fe387e61dd11f4edb32df8c202568171cce943978",
+      "sha256": "6426e5ea02c9a5ea56988cf3662849b150da9af9a5cc8f795c981abe60a4e6f3",
       "bytes": 4611
     },
     {
       "path": "scripts/reconcile-viz.ts",
-      "sha256": "2bfd65e83d3ad7aa8c2963adbf83b7ed42a2bc6e21517d391e41b6a11a733771",
+      "sha256": "3c3574102266037f460f3b980f8acce498a70ef1d45aa8f2bf0e976536aa5d52",
       "bytes": 4516
     },
     {
       "path": "scripts/release.mjs",
-      "sha256": "b5d452a69291c805b42ddb195ecc218de49d596f9316d78f7cbb59597de7ea92",
-      "bytes": 3157
+      "sha256": "2a31f011c60e6dddd6db2ffbd0b04eda783b749cfee765514009d6f4741f8e76",
+      "bytes": 4572
     },
     {
       "path": "scripts/release.ts",
-      "sha256": "ed95183484c139b1d23df6a224dcc797d68b0e2f4417e10458cb8087456433c8",
+      "sha256": "28bdd31dba3e3888d968ea09f37801a08ece5330f35d4ecda43c364d14ab2765",
       "bytes": 3251
     },
     {
       "path": "scripts/scratch-parse-cards.ts",
-      "sha256": "3948a3a9458dd0cc1b9a38f2cba6105e88ea5e3bcab9a60c0a600e471490b464",
+      "sha256": "07e14cf80c61163a7fc9a41b7fa99798290a6471292f817f754e934fea2f2083",
       "bytes": 1547
     },
     {
       "path": "scripts/top-inflows.ts",
-      "sha256": "2f49531d977ed812cde96ecc098f1ce59ea697bb540ab2d0d350d501a41f0fb9",
+      "sha256": "546cbbef0c3c6183a3695e8f08159240577c94cb5dcd5879fdb68e22ea0e57c7",
       "bytes": 1164
     },
     {
       "path": "scripts/truth-diag.ts",
-      "sha256": "87c31bf2312723b5226353796f3941e042e4be73ff7f4dd8c8893623c798ce34",
+      "sha256": "fecc4d85ce056d90e182a9a16eb34f7b28756fc57ca6bb10035ce0414374a855",
       "bytes": 2912
     },
     {
       "path": "scripts/try-amex.ts",
-      "sha256": "5894a14f1a825011314f08b048dbef760bb8953bef607cf7d668119f1d1277d2",
+      "sha256": "898584fa6f638641a668ae7ea8e5129fdb62e6654f94375451b13ef0f0499c0e",
       "bytes": 538
     },
     {
       "path": "scripts/update-headers.mjs",
-      "sha256": "afa8d6af5a1118f83f006d31e7474597f1003519bab8402670c5f1d62a820190",
-      "bytes": 2129
+      "sha256": "7c483433809e8c2737b9e44c4dcecdb09b231957ce69791b5e4389b829122e33",
+      "bytes": 2131
     },
     {
       "path": "scripts/update-headers.ts",
-      "sha256": "38a2b246df94b423125fc710943a0bbea702053a7901a4768374fd44c256646b",
+      "sha256": "583e4855459667a7d6473652a87fb893a5e7009f927206f79471f62a3a71e919",
       "bytes": 2232
     },
     {
@@ -293,5 +293,5 @@
     }
   ],
   "total_files": 58,
-  "total_bytes": 3379194
+  "total_bytes": 3380658
 }

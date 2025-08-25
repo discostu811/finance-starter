@@ -12,3 +12,6 @@ npx tsx scripts/amazon-match-report.ts ./data/Savings.xlsx 2024
 ## v0.1b1 — 2025-08-25T08:51:33.522Z
 - slice: fix Amex 2024 date parsing
 
+## v0.1b1 — 2025-08-25T09:10:36.322Z
+- slice: fix Amex 2024 date parsing
+

@@ -1,6 +1,6 @@
-// version: finance-v1.3.0
-// date: 2025-08-25 09:01 Europe/London
-// changelog: deterministic repo-wide SHA256 manifest generator (JS-only)
+// version: v0.1b1
+// date: 2025-08-25 09:10 Europe/London
+// changelog: slice: fix Amex 2024 date parsing
 
 import crypto from "node:crypto";
 import fs from "node:fs/promises";

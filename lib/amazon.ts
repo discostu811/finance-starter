@@ -1,5 +1,5 @@
 // version: v0.1b1
-// date: 2025-08-25 08:51 Europe/London
+// date: 2025-08-25 09:10 Europe/London
 // changelog: slice: fix Amex 2024 date parsing
 // lib/amazon.ts
 // v0.1b — Amazon detection + A1 detail extractor + matcher (amount + ±5 days)

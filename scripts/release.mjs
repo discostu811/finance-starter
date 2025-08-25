@@ -1,6 +1,6 @@
-// version: finance-v1.3.0
-// date: 2025-08-25 09:01 Europe/London
-// changelog: end-to-end release automation w/ optional GitHub Release upload (JS-only)
+// version: v0.1b1
+// date: 2025-08-25 09:10 Europe/London
+// changelog: slice: fix Amex 2024 date parsing
 
 import { execSync } from "node:child_process";
 import { existsSync, writeFileSync, readFileSync } from "node:fs";

@@ -1,5 +1,5 @@
 // version: v0.1b1
-// date: 2025-08-25 08:51 Europe/London
+// date: 2025-08-25 09:10 Europe/London
 // changelog: slice: fix Amex 2024 date parsing
 // scripts/try-amex.ts
 import { loadWorkbook, extractSheet } from "../lib/xlsx";

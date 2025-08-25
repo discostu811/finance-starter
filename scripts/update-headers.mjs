@@ -1,6 +1,6 @@
-// version: finance-v1.3.0
-// date: 2025-08-25 09:01 Europe/London
-// changelog: header updater for version/date/changelog (JS-only)
+// version: v0.1b1
+// date: 2025-08-25 09:10 Europe/London
+// changelog: slice: fix Amex 2024 date parsing
 
 import fs from "node:fs/promises";
 import path from "node:path";
