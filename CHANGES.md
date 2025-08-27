@@ -1,17 +1,10 @@
-# Changes — finance-v0.1b (probe)
-- Add **Amazon matching probe** (no ETL changes yet):
-  - `lib/amazon.ts` with detection and matching helpers.
-  - `scripts/amazon-match-report.ts` to report counts, sums, sample matched/unmatched, and a suppression preview.
-- Matching rule: exact amount (to pennies) and date within **±5 days**.
-- Restricts Amazon detail extraction to sheets whose names include the **year** (e.g., `Amazon 2024`).
+// version: finance-v0.1b3
+// date: 2025-08-27 15:03 Europe/London
+// changelog: v0.1b3 entry
 
-Run:
-```
-npx tsx scripts/amazon-match-report.ts ./data/Savings.xlsx 2024
-```
-## v0.1b1 — 2025-08-25T08:51:33.522Z
-- slice: fix Amex 2024 date parsing
+# CHANGES
 
-## v0.1b1 — 2025-08-25T09:10:36.322Z
-- slice: fix Amex 2024 date parsing
-
+## v0.1b3 — 2025-08-27
+Goal: Reproducible 2024 roll-up and HTML comparison to Detail.
+Scope: Config loaders, XLSX ETL, sign unification, Amazon net overlay, HTML report.
+Risk: Detail layout shifts; sync amazon overlay when pivot changes.

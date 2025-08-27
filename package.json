@@ -1,21 +1,21 @@
 {
-  "name": "finance-etl-harness",
-  "private": true,
+  "name": "home-finance-etl",
+  "version": "0.1.3",
   "type": "module",
+  "private": true,
+  "scripts": {
+    "recon:2024": "tsx scripts/recon/rollup-2024.ts --xlsx data/Savings.xlsx --out out/recon-2024.md",
+    "build": "echo 'TypeScript run-once project; use tsx'"
+  },
   "dependencies": {
-    "dayjs": "^1.11.11",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "js-yaml": "^4.1.0",
+    "dayjs": "^1.11.10",
+    "yargs": "^17.7.2",
+    "fs-extra": "^11.2.0"
   },
   "devDependencies": {
-    "ts-node": "^10.9.2",
-    "tsx": "^4.20.4",
-    "typescript": "^5.9.2"
-  },
-  "scripts": {
-    "inspect:2024": "tsx scripts/inspect-headers.ts ./data/Savings.xlsx",
-    "compare:2024": "tsx scripts/etl-compare-2024.ts ./data/Savings.xlsx",
-   "fingerprint": "node scripts/fingerprint.mjs",
-    "headers": "REL_VERSION=$npm_config_ver REL_CHANGELOG=\"$npm_config_msg\" node scripts/update-headers.mjs",
-    "release": "node scripts/release.mjs"
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.4"
   }
 }

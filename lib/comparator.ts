@@ -46,3 +46,12 @@ export function printVarianceTable(rows: VarianceRow[]) {
   const allGreen = rows.every(r => r.incomeDiff === 0 && r.expensesDiff === 0);
   console.log('\nResult:', allGreen ? 'ALL GREEN ✅' : 'MISMATCHES FOUND ❌ (likely Amazon detail needed)');
 }
+
+/** Compatibility wrapper: stable entry point for recon scripts */
+export function buildComparison(workbook: any, year: number) {
+  // Delegate to the existing comparison implementation
+  return compareToTruth(workbook, year);
+}
+
+
+export default buildComparison;

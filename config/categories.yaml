@@ -1,0 +1,15 @@
+# version: finance-v0.1b3
+# date: 2025-08-27 17:10 Europe/London
+version: 1
+rollup:
+  exclude: ["Payment", "Expenses"]
+  normalize:
+    "REstaurants": "Restaurants"
+    "UK cash": "UK Cash"
+    "David Salary": "David salary"
+    "Sonya Salary": "Sonya salary"
+    "David salary": "David salary"
+    "Sonya salary": "Sonya salary"
+  drop_if_source: ["Amazon"]  # (misnamed, but used to drop top-level 'Amazon' category)
+  unify_signs: household
+  income_categories: ["David salary", "Sonya salary"]

@@ -1,0 +1,123 @@
+# version: finance-v0.1b3
+# date: 2025-08-27 15:03 Europe/London
+# changelog: add amazon net-of-VAT/refunds overlay for 2024
+1:
+  Baby: 136.35
+  Big items: 38.00
+  Clothes: 0.00
+  Electronics: 0.00
+  Entertainment: 44.91
+  Gift: 50.40
+  Grocery: 100.51
+  Kitchen: 13.99
+  Supplies: 66.94
+2:
+  Baby: 96.03
+  Big items: 0.00
+  Clothes: 0.00
+  Electronics: 334.56
+  Entertainment: 9.49
+  Gift: 0.00
+  Grocery: 20.25
+  Kitchen: 21.95
+  Supplies: 82.28
+3:
+  Baby: 318.03
+  Big items: 56.45
+  Clothes: 0.00
+  Electronics: 3.99
+  Entertainment: 9.49
+  Gift: 0.00
+  Grocery: 0.00
+  Kitchen: 163.97
+  Supplies: 86.93
+4:
+  Baby: 157.76
+  Big items: 0.00
+  Clothes: 0.00
+  Electronics: 0.00
+  Entertainment: 0.00
+  Gift: 200.00
+  Grocery: 59.95
+  Kitchen: 157.04
+  Supplies: 129.40
+5:
+  Baby: 52.29
+  Big items: 0.00
+  Clothes: 138.98
+  Electronics: 0.00
+  Entertainment: 8.82
+  Gift: 20.16
+  Grocery: 15.99
+  Kitchen: 105.27
+  Supplies: 77.60
+6:
+  Baby: 206.11
+  Big items: 40.54
+  Clothes: 151.50
+  Electronics: 23.99
+  Entertainment: 0.00
+  Gift: 12.98
+  Grocery: 0.00
+  Kitchen: 0.00
+  Supplies: 72.10
+7:
+  Baby: 411.53
+  Big items: 197.21
+  Clothes: 24.98
+  Electronics: 0.00
+  Entertainment: 0.00
+  Gift: 0.00
+  Grocery: 43.59
+  Kitchen: 79.96
+  Supplies: 62.09
+8:
+  Baby: 127.40
+  Big items: 0.00
+  Clothes: 0.00
+  Electronics: 169.00
+  Entertainment: 0.00
+  Gift: 0.00
+  Grocery: 0.00
+  Kitchen: 0.00
+  Supplies: 62.06
+9:
+  Baby: 426.35
+  Big items: 0.00
+  Clothes: 0.00
+  Electronics: 0.00
+  Entertainment: 0.00
+  Gift: 0.00
+  Grocery: 0.00
+  Kitchen: 18.00
+  Supplies: 166.11
+10:
+  Baby: 130.44
+  Big items: 42.99
+  Clothes: 14.99
+  Electronics: 99.60
+  Entertainment: 0.00
+  Gift: 0.00
+  Grocery: 0.00
+  Kitchen: 0.00
+  Supplies: 31.14
+11:
+  Baby: 291.27
+  Big items: 0.00
+  Clothes: 0.00
+  Electronics: 0.00
+  Entertainment: 0.00
+  Gift: 0.00
+  Grocery: 20.00
+  Kitchen: 40.17
+  Supplies: 113.96
+12:
+  Baby: 23.58
+  Big items: 0.00
+  Clothes: 0.00
+  Electronics: 0.00
+  Entertainment: 0.00
+  Gift: 0.00
+  Grocery: 0.00
+  Kitchen: 0.00
+  Supplies: 0.00

@@ -1,12 +1,5 @@
-node_modules
-
-# local artifacts
-finance-release-toolkit-*.zip
-*.bak
-_export/
-
-# local artifacts
-finance-release-toolkit-*.zip
-finance-v*-dryrun.zip
-*.bak
-_export/
+/out/
+node_modules/
+data/Savings.xlsx
+*.log
+.DS_Store

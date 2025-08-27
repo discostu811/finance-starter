@@ -1,0 +1,21 @@
+# version: finance-v0.1b3
+# date: 2025-08-27 17:10 Europe/London
+version: 1
+sources:
+  amex_2024:
+    sheet: "2024 amex"
+    columns: { date: "Unnamed: 0", category: "Unnamed: 4", amount: "Unnamed: 5", month: "Unnamed: 8" }
+  mc_2024:
+    sheet: "2024 mc"
+    columns: { date: "Date ", category: "CATEGORY", amount: "Amount", month: "Month.1" }
+  david_2024:
+    sheet: "2024 david account"
+    columns: { date: "Date", category: "Category", amount: "Debit/Credit", month: "Month.1" }
+  sonya_2024:
+    sheet: "2024 Sonya account"
+    columns: { date: "Date", category: "Category", amount: "Debit/Credit", month: "Month.1" }
+  amazon_2024:
+    sheet: "2024 Amazon"
+    columns: { date: "date", category: "CATEGORY", amount: "total", month: "MONTH" }
+    amazon:
+      use_net_from_pivot: true
